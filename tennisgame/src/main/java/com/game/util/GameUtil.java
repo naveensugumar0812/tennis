@@ -42,10 +42,10 @@ public class GameUtil {
 	}
 
 	public static boolean hasWinner(Player firstPlayer, Player secondPlayer) {
-		if(secondPlayer.getPlayerScore() >= 4 
+		if(secondPlayer.getPlayerScore() >= 3
 				&& secondPlayer.getPlayerScore() >= firstPlayer.getPlayerScore() + 2 )
 			return true;
-		if(firstPlayer.getPlayerScore() >= 4 
+		if(firstPlayer.getPlayerScore() >= 3 
 				&& firstPlayer.getPlayerScore() >= secondPlayer.getPlayerScore() + 2)
 			return true;
 		return false;
@@ -53,11 +53,11 @@ public class GameUtil {
 
 	public static boolean hasAdvantage(Player firstPlayer, Player secondPlayer) {
 
-		if (firstPlayer.getPlayerScore() >= 4 
+		if (firstPlayer.getPlayerScore() >= 3 
 				&& firstPlayer.getPlayerScore() == secondPlayer.getPlayerScore() + 1)
 			return true;
 
-		if (secondPlayer.getPlayerScore() >= 4 
+		if (secondPlayer.getPlayerScore() >= 3 
 				&& secondPlayer.getPlayerScore() == firstPlayer.getPlayerScore() + 1)
 			return true;
 
@@ -66,26 +66,15 @@ public class GameUtil {
 
 	}
 
-	/*
-	 * public static void playerOneScores(Player firstPlayer) {
-	 * firstPlayer.setPlayerScore(firstPlayer.getPlayerScore()+1); }
-	 * 
-	 * public static void playerTwoScores(Player secondPlayer) {
-	 * secondPlayer.setPlayerScore(secondPlayer.getPlayerScore()+1); }
-	 */
-
 	public static String getScore(int score) {
 		switch (score) {
-		case 3:
-			return GameConstant.SCORE_FORTY;
 		case 2:
 			return GameConstant.SCORE_THIRTY;
 		case 1: 
 			return GameConstant.SCORE_FIFTEEN;
-		case 0:
+		default:
 			return GameConstant.SCORE_LOVE;
 		}
-		throw new IllegalArgumentException(GameConstant.SCORE_EXCEPTION + score);
 	}
 
 
