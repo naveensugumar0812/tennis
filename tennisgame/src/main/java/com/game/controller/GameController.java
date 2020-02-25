@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.game.service.GameStrategy;
 
-import lombok.extern.slf4j.Slf4j;
-
 /**
  * @author NaveenSugumar
  *
@@ -33,9 +31,9 @@ public class GameController {
 		LOGGER.info("GameController : getScore : Start");
 		String displayScore="";
 		try {
-		displayScore= tennisGameScore.generateScore(firstScore, secondScore);
+		displayScore= tennisGameScore.setPlayerScore(firstScore, secondScore);
 		} catch(IllegalArgumentException exception) {
-			LOGGER.info("GameController : getScore : End1");
+			LOGGER.info("GameController : getScore : End");
 			return exception.getMessage();
 		}
 		LOGGER.info("GameController : getScore : End");

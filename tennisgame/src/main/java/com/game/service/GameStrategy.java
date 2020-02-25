@@ -2,6 +2,6 @@ package com.game.service;
 
 public interface GameStrategy {
 	
-	String generateScore(String firstScore, String secondScore);
+	String setPlayerScore(String firstScore, String secondScore);
 
 }

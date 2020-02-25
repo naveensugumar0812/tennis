@@ -28,12 +28,12 @@ public class GameUtil {
 
 
 
-	public static boolean isDeuce(Player firstPlayer, Player secondPlayer) {
-		return firstPlayer.getPlayerScore() >= 3 
-				&& secondPlayer.getPlayerScore() == firstPlayer.getPlayerScore();
+	public static boolean checkForDeuce(Player firstPlayer, Player secondPlayer) {
+		boolean deuce= firstPlayer.getPlayerScore() >= 3 && secondPlayer.getPlayerScore() == firstPlayer.getPlayerScore();
+		return deuce;
 	}
 
-	public static String playerWithHighestScore(Player firstPlayer, Player secondPlayer) {
+	public static String getLeadingScorer(Player firstPlayer, Player secondPlayer) {
 		if (firstPlayer.getPlayerScore() > secondPlayer.getPlayerScore()) {
 			return firstPlayer.getPlayerName();
 		} else {
@@ -41,29 +41,27 @@ public class GameUtil {
 		}
 	}
 
-	public static boolean hasWinner(Player firstPlayer, Player secondPlayer) {
-		if(secondPlayer.getPlayerScore() >= 3
-				&& secondPlayer.getPlayerScore() >= firstPlayer.getPlayerScore() + 2 )
+	public static boolean checkForWinner(Player firstPlayer, Player secondPlayer) {
+		if((secondPlayer.getPlayerScore() >= 3 && secondPlayer.getPlayerScore() >= firstPlayer.getPlayerScore() + 2 ) 
+				|| (firstPlayer.getPlayerScore() >= 3 && firstPlayer.getPlayerScore() >= secondPlayer.getPlayerScore() + 2)){
 			return true;
-		if(firstPlayer.getPlayerScore() >= 3 
-				&& firstPlayer.getPlayerScore() >= secondPlayer.getPlayerScore() + 2)
-			return true;
+		}
 		return false;
 	}
 
-	public static boolean hasAdvantage(Player firstPlayer, Player secondPlayer) {
+	public static boolean checkForAdvantage(Player firstPlayer, Player secondPlayer) {
 
-		if (firstPlayer.getPlayerScore() >= 3 
-				&& firstPlayer.getPlayerScore() == secondPlayer.getPlayerScore() + 1)
+		if ((firstPlayer.getPlayerScore() >= 3 && firstPlayer.getPlayerScore() == secondPlayer.getPlayerScore() + 1) 
+				|| (secondPlayer.getPlayerScore() >= 3 && secondPlayer.getPlayerScore() == firstPlayer.getPlayerScore() + 1)){
 			return true;
-
-		if (secondPlayer.getPlayerScore() >= 3 
-				&& secondPlayer.getPlayerScore() == firstPlayer.getPlayerScore() + 1)
-			return true;
-
+		}
 
 		return false;
 
+	}
+	
+	public static void addScore(Player player) {
+		player.setPlayerScore(player.getPlayerScore()+1);
 	}
 
 	public static String getScore(int score) {

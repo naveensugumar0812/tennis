@@ -1,125 +1,198 @@
 package com.game;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.stream.IntStream;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.game.exception.IllegalScorePassedException;
+import com.game.model.Player;
 import com.game.service.impl.TennisGame;
-import static org.junit.Assert.assertEquals;
+import com.game.util.GameConstant;
+import com.game.util.GameUtil;
 
 @SpringBootTest
 public class GameApplicationTests {
-	
+
 	@InjectMocks
 	TennisGame game;
-	
+
 	public GameApplicationTests(){}
 
 	@Before
 	public void init() {
 		MockitoAnnotations.initMocks(this);
+		game.setFirstPlayer(new Player());
+		game.setSecondPlayer(new Player());
+		game.getFirstPlayer().setPlayerName(GameConstant.PLAYER_ONE_NAME);
+		game.getSecondPlayer().setPlayerName(GameConstant.PLAYER_TWO_NAME);
 	}
-	
+
 	// Negative case testing starts
 
-	@Test(expected=IllegalArgumentException.class)
+	@Test(expected=IllegalScorePassedException.class)
 	public void testAlphaInputParam() {
-		game.generateScore("aa ss", "asdas");
+		game.setPlayerScore("aa ss ", "asdas");
 	}
 
-	@Test(expected=IllegalArgumentException.class)
+	@Test(expected=IllegalScorePassedException.class)
 	public void testAllNegativeParam() {
-		game.generateScore("-1", "-1");
+		game.setPlayerScore("-1", "-1");
 	}
 
-	@Test(expected=IllegalArgumentException.class)
+	@Test(expected=IllegalScorePassedException.class)
 	public void testNegativeScorePlayerOne() {
-		game.generateScore("-1", "0");
-	}
-	
-	@Test(expected=IllegalArgumentException.class)
-	public void testNegativeScorePlayerTwo() {
-		game.generateScore("2", "-4");
+		game.setPlayerScore("-1", "0");
 	}
 
-	@Test(expected=IllegalArgumentException.class)
+	@Test(expected=IllegalScorePassedException.class)
+	public void testNegativeScorePlayerTwo() {
+		game.setPlayerScore("2", "-4");
+	}
+
+	@Test(expected=IllegalScorePassedException.class)
 	public void testPlayerTwoWinMarginGtThree() {
-		game.generateScore("6", "9");
+		game.setPlayerScore("6", "9");
 	}
-	
-	@Test(expected=IllegalArgumentException.class)
+
+	@Test(expected=IllegalScorePassedException.class)
 	public void testPlayerOneWinMarginGtThree() {
-		game.generateScore("8", "5");
+		game.setPlayerScore("8", "5");
 	}
-	
+
 	// Negative case testing ends
 
 	@Test
 	public void testLoveAll() {
-		assertEquals("Love all",game.generateScore("0", "0"));
+		assertEquals(GameConstant.SCORE_LOVE+GameConstant.ALL ,game.setPlayerScore("0", "0"));
 	}
-	
+
 	@Test
-	public void testPlayerOneWins() {
-		assertEquals("Fifteen-Love",game.generateScore("1", "0"));
+	public void testScoreFifteenLove() {
+		assertEquals(GameConstant.SCORE_FIFTEEN+GameConstant.UNDERSCORE+GameConstant.SCORE_LOVE,game.setPlayerScore("1", "0"));
 	}
-	
+
 	@Test
 	public void testPlayerOneWinsSecondBall() {
-		assertEquals("Thirty-Love",game.generateScore("2", "0"));
+		assertEquals(GameConstant.SCORE_THIRTY+GameConstant.UNDERSCORE+GameConstant.SCORE_LOVE,game.setPlayerScore("2", "0"));
 	}
-	
+
 	@Test
 	public void testPlayerTwoWinsSecondBall() {
-		assertEquals("Thirty-Fifteen",game.generateScore("2", "1"));
+		assertEquals(GameConstant.SCORE_THIRTY+GameConstant.UNDERSCORE+GameConstant.SCORE_FIFTEEN,game.setPlayerScore("2", "1"));
 	}
 
 	@Test
 	public void testFifteenAll() {
-		assertEquals("Fifteen all",game.generateScore("1", "1"));
+		assertEquals(GameConstant.SCORE_FIFTEEN+GameConstant.ALL,game.setPlayerScore("1", "1"));
 	}
-	
+
 	@Test
 	public void testThirtyAll() {
-		assertEquals("Thirty all",game.generateScore("2", "2"));
+		assertEquals(GameConstant.SCORE_THIRTY+GameConstant.ALL,game.setPlayerScore("2", "2"));
 	}
-	
+
 	@Test
 	public void testDeuce() {
-		assertEquals("Deuce",game.generateScore("3", "3"));
+		assertEquals(GameConstant.DEUCE,game.setPlayerScore("3", "3"));
 	}
-	
-	
+
+
 	@Test
 	public void testPlayerOneAdvantage() {
-		assertEquals("Advantage PlayerOne",game.generateScore("4", "3"));
+		assertEquals(GameConstant.ADVANTAGE+GameConstant.PLAYER_ONE_NAME,game.setPlayerScore("4", "3"));
+	}
+
+	@Test
+	public void testPlayerTwoAdvantage() {
+		assertEquals(GameConstant.ADVANTAGE+GameConstant.PLAYER_TWO_NAME,game.setPlayerScore("3", "4"));
+	}
+
+	@Test
+	public void testPlayerOneWins() {
+		assertEquals(GameConstant.PLAYER_ONE_NAME+GameConstant.WINS,game.setPlayerScore("3", "1"));
+	}
+
+	@Test
+	public void testPlayerTwoWins() {
+		assertEquals(GameConstant.PLAYER_TWO_NAME+GameConstant.WINS,game.setPlayerScore("0", "3"));
+	}
+
+	@Test
+	public void testPlayerTwoWinsAfterAdvantage() {
+		assertEquals(GameConstant.PLAYER_TWO_NAME+GameConstant.WINS,game.setPlayerScore("5", "7"));
+	}
+
+	@Test
+	public void testPlayerOneWinsAfterAdvantage() {
+		assertEquals(GameConstant.PLAYER_ONE_NAME+GameConstant.WINS,game.setPlayerScore("6", "4"));
+	}
+
+	@Test 
+	public void testGameOne() {
+
+		IntStream.rangeClosed(1, 3).forEach((Integer) -> { 
+			GameUtil.addScore(game.getFirstPlayer());
+		});
+		assertEquals(GameConstant.PLAYER_ONE_NAME+GameConstant.WINS,game.getScoreBoard());
 	}
 	
-	@Test
-	public void testPalyerTwoAdvantage() {
-		assertEquals("Advantage PlayerTwo",game.generateScore("3", "4"));
+	@Test 
+	public void testGameTwo() {
+
+		assertEquals(GameConstant.SCORE_LOVE+GameConstant.ALL,game.getScoreBoard());
+		IntStream.rangeClosed(1, 2).forEach((Integer) -> { 
+			GameUtil.addScore(game.getFirstPlayer());
+		});
+		assertEquals(GameConstant.SCORE_THIRTY+GameConstant.UNDERSCORE+GameConstant.SCORE_LOVE,game.getScoreBoard());
+		IntStream.rangeClosed(1, 1).forEach((Integer) -> { 
+			GameUtil.addScore(game.getSecondPlayer());
+		});
+		
+		assertEquals(GameConstant.SCORE_THIRTY+GameConstant.UNDERSCORE+GameConstant.SCORE_FIFTEEN,game.getScoreBoard());
+		GameUtil.addScore(game.getFirstPlayer());
+		assertEquals(GameConstant.PLAYER_ONE_NAME+GameConstant.WINS,game.getScoreBoard());
 	}
 	
-	@Test
-	public void testPalyerOneWins() {
-		assertEquals("PlayerOne wins",game.generateScore("3", "1"));
-	}
+	/*
+	 * Test case to scenario of player winning after score is in deuce and advantage
+	 */
 	
-	@Test
-	public void testPalyerTwoWins() {
-		assertEquals("PlayerTwo wins",game.generateScore("0", "3"));
+	@Test 
+	public void testGameThree() {
+
+		assertEquals(GameConstant.SCORE_LOVE+GameConstant.ALL,game.getScoreBoard());
+		GameUtil.addScore(game.getFirstPlayer());
+		assertEquals(GameConstant.SCORE_FIFTEEN+GameConstant.UNDERSCORE+GameConstant.SCORE_LOVE,game.getScoreBoard());
+		GameUtil.addScore(game.getSecondPlayer());
+		assertEquals(GameConstant.SCORE_FIFTEEN+GameConstant.ALL,game.getScoreBoard());
+		IntStream.rangeClosed(1, 1).forEach((Integer) -> { 
+			GameUtil.addScore(game.getSecondPlayer());
+		});
+		
+		assertEquals(GameConstant.SCORE_FIFTEEN+GameConstant.UNDERSCORE+GameConstant.SCORE_THIRTY,game.getScoreBoard());
+		IntStream.rangeClosed(1, 1).forEach((Integer) -> { 
+			GameUtil.addScore(game.getFirstPlayer());
+		});
+		assertEquals(GameConstant.SCORE_THIRTY+GameConstant.ALL,game.getScoreBoard());
+		GameUtil.addScore(game.getFirstPlayer());
+		assertEquals(GameConstant.ADVANTAGE+GameConstant.PLAYER_ONE_NAME,game.getScoreBoard());
+		GameUtil.addScore(game.getSecondPlayer());
+		assertEquals(GameConstant.DEUCE,game.getScoreBoard());
+		GameUtil.addScore(game.getSecondPlayer());
+		assertEquals(GameConstant.ADVANTAGE+GameConstant.PLAYER_TWO_NAME,game.getScoreBoard());
+		GameUtil.addScore(game.getFirstPlayer());
+		assertEquals(GameConstant.DEUCE,game.getScoreBoard());
+		GameUtil.addScore(game.getFirstPlayer());
+		assertEquals(GameConstant.ADVANTAGE+GameConstant.PLAYER_ONE_NAME,game.getScoreBoard());
+		GameUtil.addScore(game.getFirstPlayer());
+		assertEquals(GameConstant.PLAYER_ONE_NAME+GameConstant.WINS,game.getScoreBoard());
 	}
-	
-	@Test
-	public void testPalyerTwoWinsAfterAdvantage() {
-		assertEquals("PlayerTwo wins",game.generateScore("5", "7"));
-	}
-	
-	@Test
-	public void testPalyerOneWinsAfterAdvantage() {
-		assertEquals("PlayerOne wins",game.generateScore("6", "4"));
-	}
+
 
 }
