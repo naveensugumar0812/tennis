@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.game.service.GameStrategy;
+import com.game.service.Game;
 
 /**
  * @author NaveenSugumar
@@ -20,24 +20,27 @@ import com.game.service.GameStrategy;
 @RestController
 @RequestMapping("/game")
 public class GameController {
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(GameController.class);
-	
+
 	@Autowired
-	private GameStrategy tennisGameScore;
-	
-	@GetMapping(value = "/getScore" )
-	public String getScore(@RequestParam("scoreOne") String firstScore, @RequestParam("scoreTwo") String secondScore) {
-		LOGGER.info("GameController : getScore : Start");
-		String displayScore="";
+	private Game tennisGame;
+
+	@GetMapping(value = "/getResult")
+	public String getResult(@RequestParam("scoreOne") String firstScore, @RequestParam("scoreTwo") String secondScore) {
+		LOGGER.info("GameController : getGameResult : Start");
+
+		String displayResult = "";
+
 		try {
-		displayScore= tennisGameScore.setPlayerScore(firstScore, secondScore);
-		} catch(IllegalArgumentException exception) {
-			LOGGER.info("GameController : getScore : End");
+			displayResult = tennisGame.getGameResult(firstScore, secondScore);
+		} catch (Exception exception) {
+			LOGGER.error("GameController : getGameResult : Exception");
 			return exception.getMessage();
 		}
-		LOGGER.info("GameController : getScore : End");
-		return displayScore;
+
+		LOGGER.info("GameController : getGameResult : End");
+		return displayResult;
 	}
 
 }
